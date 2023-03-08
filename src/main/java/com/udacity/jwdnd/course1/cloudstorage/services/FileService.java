@@ -20,6 +20,10 @@ public class FileService {
         this.userService = userService;
     }
 
+    public Boolean isFileNameExist(String fileName) {
+        return fileMapper.getFile(fileName) != null;
+    }
+
     public int createNewFile(MultipartFile fileUpload) throws IOException, SQLException {
         return fileMapper.insert(
                 new File(
@@ -37,5 +41,11 @@ public class FileService {
         return fileMapper.getAllFiles(userService.getCurrentUserId());
     }
 
+    public File getFileById(Integer fileId) {
+        return fileMapper.getFileById(fileId);
+    }
 
+    public void deleteFile(Integer fileId) {
+        fileMapper.deleteFile(fileId);
+    }
 }

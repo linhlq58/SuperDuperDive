@@ -14,10 +14,6 @@
                 <form action="#" th:action="@{/logout}" method="POST">
                     <button id="logout-button" type="submit" class="btn btn-secondary float-right">Logout</button>
                 </form>
-
-                <div id="success-upload" th:if="${uploadSuccess}" class="alert alert-dark" style="display: inline-block;">
-                    You successfully upload a file.
-                </div>
             </div>
 
             <div id="contentDiv" style="clear: right;">
@@ -30,7 +26,7 @@
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                     <div class="tab-pane fade show active" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
-                        <form action="#" th:action="@{/file-upload}" enctype="multipart/form-data" method="POST">
+                        <form action="#" th:action="@{/home/file-upload}" enctype="multipart/form-data" method="POST">
                             <div class="container">
                                 <div class="row" style="margin: 1em;">
                                     <div class="col-sm-2">
@@ -42,6 +38,14 @@
                                     <div class="col-sm-4">
                                         <button type="submit" class="btn btn-dark" id="uploadButton">Upload</button>
                                     </div>
+                                </div>
+
+                                <div id="success-upload" th:if="${uploadSuccess}" class="alert alert-dark">
+                                    You successfully upload a file.
+                                </div>
+
+                                <div id="error-upload" th:if="${uploadError}" class="alert alert-dark" th:text="${uploadError}">
+                                    Error
                                 </div>
                             </div>
                         </form>
@@ -59,10 +63,12 @@
                                 </tr>
                                 <tr th:each="file : ${listFiles}">
                                     <td>
-                                        <a target="_blank" class="btn btn-success">
+                                        <a target="_blank" class="btn btn-success" th:href="@{'/home/file-download/' + ${file.fileId}}">
                                             View
                                         </a>
-                                        <a  class="btn btn-danger">Delete</a>
+                                        <a  class="btn btn-danger" th:href="@{'/home/file-delete/' + ${file.fileId}}">
+                                            Delete
+                                        </a>
                                     </td>
                                     <th scope="row" th:text="${file.fileName}">ExampleFile.txt</th>
                                 </tr>

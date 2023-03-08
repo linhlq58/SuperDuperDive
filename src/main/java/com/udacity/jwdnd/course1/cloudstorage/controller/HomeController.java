@@ -3,6 +3,7 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 
 @Controller
 public class HomeController {
-    private FileService fileService;
+    private final FileService fileService;
 
     public HomeController(FileService fileService) {
         this.fileService = fileService;
@@ -27,23 +28,47 @@ public class HomeController {
         return "home";
     }
 
-    @PostMapping("/file-upload")
+    @PostMapping("/home/file-upload")
     public String handleFileUpload(@RequestParam("fileUpload") MultipartFile fileUpload, Model model) throws IOException, SQLException {
-        int fileIdAdded = fileService.createNewFile(fileUpload);
+        String uploadError = null;
 
-        if (fileIdAdded > 0) {
-            model.addAttribute("uploadSuccess", true);
-            model.addAttribute("listFiles", this.fileService.getAllFiles());
+        if (fileService.isFileNameExist(fileUpload.getOriginalFilename())) {
+            uploadError = "Can not upload a file with same name.";
         }
 
-        return "home";
+        if (uploadError != null) {
+            model.addAttribute("uploadError", uploadError);
+        } else {
+            int fileIdAdded = fileService.createNewFile(fileUpload);
+
+            if (fileIdAdded > 0) {
+                model.addAttribute("uploadSuccess", true);
+            }
+        }
+
+        model.addAttribute("listFiles", this.fileService.getAllFiles());
+
+        return "redirect:/home";
     }
 
-//    @GetMapping("/file-download")
-//    public ResponseEntity<byte[]> downloadFile(@ModelAttribute File file, Model model) {
-//
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "" + "\"")
-//                .body(file.getFileData());
-//    }
+    @GetMapping("/home/file-delete/{fileId}")
+    public String deleteFile(@PathVariable Integer fileId, Model model) {
+        fileService.deleteFile(fileId);
+        model.addAttribute("listFiles", this.fileService.getAllFiles());
+
+        return "redirect:/home";
+    }
+
+    @GetMapping("/home/file-download/{fileId}")
+    public ResponseEntity<InputStream> downloadFile(@PathVariable Integer fileId, Model model) {
+        File file = fileService.getFileById(fileId);
+
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(new MediaType(file.getContentType()));
+        header.set
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
+                .body(file.getFileData());
+    }
 }
