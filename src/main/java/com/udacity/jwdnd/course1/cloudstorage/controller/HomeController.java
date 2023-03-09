@@ -2,6 +2,7 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
+import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,17 @@ import java.sql.SQLException;
 @Controller
 public class HomeController {
     private final FileService fileService;
+    private final NoteService noteService;
 
-    public HomeController(FileService fileService) {
+    public HomeController(FileService fileService, NoteService noteService) {
         this.fileService = fileService;
+        this.noteService = noteService;
     }
 
     @GetMapping("/home")
     public String homeView(Model model) {
         model.addAttribute("listFiles", this.fileService.getAllFiles());
+        model.addAttribute("listNotes", this.noteService.getAllNotes());
         return "home";
     }
 
@@ -39,9 +43,9 @@ public class HomeController {
         if (uploadError != null) {
             model.addAttribute("uploadError", uploadError);
         } else {
-            int fileIdAdded = fileService.createNewFile(fileUpload);
+            int rowAdded = fileService.createNewFile(fileUpload);
 
-            if (fileIdAdded > 0) {
+            if (rowAdded > 0) {
                 model.addAttribute("uploadSuccess", true);
             }
         }
@@ -62,10 +66,6 @@ public class HomeController {
     @GetMapping("/home/file-download/{fileId}")
     public ResponseEntity<InputStream> downloadFile(@PathVariable Integer fileId, Model model) {
         File file = fileService.getFileById(fileId);
-
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(new MediaType(file.getContentType()));
-        header.set
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
