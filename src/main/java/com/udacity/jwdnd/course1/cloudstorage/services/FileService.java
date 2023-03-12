@@ -32,7 +32,7 @@ public class FileService {
                         fileUpload.getContentType(),
                         String.valueOf(fileUpload.getSize()),
                         userService.getCurrentUserId(),
-                        fileUpload.getInputStream()
+                        fileUpload.getBytes()
                 )
         );
     }

@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import com.udacity.jwdnd.course1.cloudstorage.services.EncryptionService;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
@@ -13,6 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.io.File;
+import java.security.SecureRandom;
+import java.util.Base64;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CloudStorageApplicationTests {
 
@@ -225,5 +229,98 @@ class CloudStorageApplicationTests {
 
 		driver.get("http://localhost:" + this.port + "/home");
 		Assertions.assertNotEquals("http://localhost:" + this.port + "/home", driver.getCurrentUrl());
+	}
+
+	@Test
+	public void testCreateNote() {
+		String title = "Test Create Note";
+		String desc = "This is Test Create Note";
+
+		doMockSignUp("CreateNote","Test","UTCreateNote","123");
+		doLogIn("UTCreateNote", "123");
+
+		driver.get("http://localhost:" + this.port + "/home");
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
+		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("add-note-button")));
+		WebElement addNoteButton = driver.findElement(By.id("add-note-button"));
+		addNoteButton.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		WebElement noteTitle = driver.findElement(By.id("note-title"));
+		noteTitle.click();
+		noteTitle.sendKeys(title);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
+		WebElement noteDescription = driver.findElement(By.id("note-description"));
+		noteDescription.click();
+		noteDescription.sendKeys(desc);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-submit-button")));
+		WebElement noteSubmit = driver.findElement(By.id("note-submit-button"));
+		noteSubmit.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.name("returnHome")));
+		WebElement returnHomeButton = driver.findElement(By.name("returnHome"));
+		returnHomeButton.click();
+
+		Assertions.assertTrue(driver.getPageSource().contains(title));
+		Assertions.assertTrue(driver.getPageSource().contains(desc));
+	}
+
+	@Test
+	public void testCreateCredential() {
+		String url = "localhost:8080";
+		String userName = "linhlq";
+		String password = "1234";
+
+		SecureRandom random = new SecureRandom();
+		byte[] key = new byte[16];
+		random.nextBytes(key);
+		String encodedKey = Base64.getEncoder().encodeToString(key);
+
+		doMockSignUp("CreateCredential","Test","UTCreateCredential","123");
+		doLogIn("UTCreateCredential", "123");
+
+		driver.get("http://localhost:" + this.port + "/home");
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-credentials-tab")));
+		WebElement credentialTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTab.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("add-credential-button")));
+		WebElement addCredentialButton = driver.findElement(By.id("add-credential-button"));
+		addCredentialButton.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+		WebElement credentialUrl = driver.findElement(By.id("credential-url"));
+		credentialUrl.click();
+		credentialUrl.sendKeys(url);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-username")));
+		WebElement credentialUsername = driver.findElement(By.id("credential-username"));
+		credentialUsername.click();
+		credentialUsername.sendKeys(userName);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-password")));
+		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
+		credentialPassword.click();
+		credentialPassword.sendKeys(password);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-submit-button")));
+		WebElement credentialSubmit = driver.findElement(By.id("credential-submit-button"));
+		credentialSubmit.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.name("returnHome")));
+		WebElement returnHomeButton = driver.findElement(By.name("returnHome"));
+		returnHomeButton.click();
+
+		Assertions.assertTrue(driver.getPageSource().contains(url));
+		Assertions.assertTrue(driver.getPageSource().contains(userName));
 	}
 }
