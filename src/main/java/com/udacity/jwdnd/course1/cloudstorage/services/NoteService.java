@@ -29,7 +29,7 @@ public class NoteService {
     }
 
     public int updateNote(Note note) {
-        return noteMapper.update(note);
+        return noteMapper.update(new Note(note.getNoteId(), note.getNoteTitle(), note.getNoteDescription(), userService.getCurrentUserId()));
     }
 
     public void deleteNote(Integer noteId) {

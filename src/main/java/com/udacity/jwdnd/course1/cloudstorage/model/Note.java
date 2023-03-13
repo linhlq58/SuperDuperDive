@@ -22,6 +22,7 @@ public class Note {
     }
 
     public String getNoteTitle() {
+        if (noteTitle.length() > 20) return noteTitle.substring(0, 20);
         return noteTitle;
     }
 
@@ -30,6 +31,7 @@ public class Note {
     }
 
     public String getNoteDescription() {
+        if (noteDescription.length() > 1000) return noteDescription.substring(0, 1000);
         return noteDescription;
     }
 

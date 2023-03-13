@@ -26,6 +26,7 @@ public class User {
     }
 
     public String getUserName() {
+        if (userName.length() > 20) return userName.substring(0, 20);
         return userName;
     }
 
@@ -50,6 +51,7 @@ public class User {
     }
 
     public String getFirstName() {
+        if (firstName.length() > 20) return firstName.substring(0, 20);
         return firstName;
     }
 
@@ -58,6 +60,7 @@ public class User {
     }
 
     public String getLastName() {
+        if (lastName.length() > 20) return lastName.substring(0, 20);
         return lastName;
     }
 

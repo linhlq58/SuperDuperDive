@@ -26,6 +26,7 @@ public class Credential {
     }
 
     public String getUrl() {
+        if (url.length() > 100) return url.substring(0, 100);
         return url;
     }
 
@@ -34,6 +35,7 @@ public class Credential {
     }
 
     public String getUserName() {
+        if (userName.length() > 30) return userName.substring(0, 30);
         return userName;
     }
 
